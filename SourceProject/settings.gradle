@@ -1,0 +1,2 @@
+include ':bluetoothserial'
+rootProject.name='BluetoothSerial'
