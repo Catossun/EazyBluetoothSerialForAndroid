@@ -1,8 +1,11 @@
 package com.chen.weikeup.mlib.bluetoothserial;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+
+import androidx.annotation.RequiresPermission;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +40,9 @@ public class BluetoothSerialDevice {
     private BluetoothDevice device;
     private BluetoothSocket socket;
     private UUID uuid;
+    private boolean hadBeenConnected = false;
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH)
     BluetoothSerialDevice(BluetoothDevice device) throws IOException {
         this.device = device;
         uuid = UUID.fromString(SERIAL_PORT_SERVICE_UUID);
@@ -95,13 +100,27 @@ public class BluetoothSerialDevice {
      *
      * @throws IOException
      */
+    @RequiresPermission(allOf = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN})
     public void connect() throws IOException {
-        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-        socket.connect();
-        if (isConnected()) {
-            out = new PrintStream(socket.getOutputStream());
-            in = new Scanner(socket.getInputStream());
+        if (hadBeenConnected) {
+            if (socket.isConnected()) socket.close();
+            socket = device.createRfcommSocketToServiceRecord(uuid);
+            hadBeenConnected = false;
         }
+        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+        getSocket().connect();
+        if (isConnected()) {
+            out = new PrintStream(getSocket().getOutputStream());
+            in = new Scanner(getSocket().getInputStream());
+            hadBeenConnected = true;
+        }
+    }
+
+    /**
+     * 關閉連線。
+     */
+    public void close() throws IOException {
+        if (socket != null) socket.close();
     }
 
     /**
@@ -111,7 +130,7 @@ public class BluetoothSerialDevice {
      * @throws IOException
      */
     public InputStream getInputStream() throws IOException {
-        return socket.getInputStream();
+        return socket == null ? null : socket.getInputStream();
     }
 
     /**
@@ -121,7 +140,7 @@ public class BluetoothSerialDevice {
      * @throws IOException
      */
     public OutputStream getOutputStream() throws IOException {
-        return socket.getOutputStream();
+        return socket == null ? null : socket.getOutputStream();
     }
 
     /**
@@ -129,6 +148,7 @@ public class BluetoothSerialDevice {
      *
      * @return 裝置名稱。
      */
+    @RequiresPermission(Manifest.permission.BLUETOOTH)
     public String getName() {
         return device.getName();
     }

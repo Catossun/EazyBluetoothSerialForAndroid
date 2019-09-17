@@ -1,10 +1,13 @@
 package com.chen.weikeup.mlib.bluetoothserial;
 
+import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.util.Log;
+
+import androidx.annotation.RequiresPermission;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -27,6 +30,7 @@ public class BluetoothSerialAdapter {
      *
      * @return 已配對的裝置之 Set 集合。
      */
+    @RequiresPermission(allOf = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN})
     public static Set<BluetoothSerialDevice> getDevices() {
         Set<BluetoothSerialDevice> devices = new HashSet<>();
         if (adapter != null) {
@@ -57,6 +61,7 @@ public class BluetoothSerialAdapter {
      *
      * @return 如果裝置已開啟藍芽，回傳 True，否則回傳 False。
      */
+    @RequiresPermission(Manifest.permission.BLUETOOTH)
     public static boolean isEnable() {
         return adapter != null && adapter.isEnabled();
     }
