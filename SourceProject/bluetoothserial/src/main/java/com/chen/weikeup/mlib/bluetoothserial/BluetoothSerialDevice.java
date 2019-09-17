@@ -123,4 +123,22 @@ public class BluetoothSerialDevice {
     public OutputStream getOutputStream() throws IOException {
         return socket.getOutputStream();
     }
+
+    /**
+     * 取得裝置名稱。
+     *
+     * @return 裝置名稱。
+     */
+    public String getName() {
+        return device.getName();
+    }
+
+    /**
+     * 取得裝置位址。
+     *
+     * @return 裝置位址。
+     */
+    public String getAddress() {
+        return device.getAddress();
+    }
 }
