@@ -95,9 +95,9 @@ public class MainActivity extends AppCompatActivity {
                                     //持續接收資料
                                     while (connectedDevice.isConnected()) {
                                         //如果有資料進來
-                                        if (connectedDevice.in.hasNext()) {
+                                        if (connectedDevice.in.ready()) {
                                             //讀取一筆資料
-                                            String dataIn = connectedDevice.in.next();
+                                            String dataIn = connectedDevice.in.readLine();
 
                                             //將資料顯示在畫面上
                                             runOnUiThread(() -> {
