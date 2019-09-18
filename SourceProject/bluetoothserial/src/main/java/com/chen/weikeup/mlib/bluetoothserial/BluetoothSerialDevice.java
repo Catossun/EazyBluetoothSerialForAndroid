@@ -7,9 +7,13 @@ import android.bluetooth.BluetoothSocket;
 
 import androidx.annotation.RequiresPermission;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.Scanner;
 import java.util.UUID;
@@ -33,9 +37,9 @@ public class BluetoothSerialDevice {
 
     /**
      * <p>用來接收資料。</p>
-     * <p>使用 in.next(); 接收資料</p>
+     * <p>使用 in.readLine(); 接收資料</p>
      */
-    public Scanner in;
+    public BufferedReader in;
 
     private BluetoothDevice device;
     private BluetoothSocket socket;
@@ -110,8 +114,8 @@ public class BluetoothSerialDevice {
         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
         getSocket().connect();
         if (isConnected()) {
-            out = new PrintStream(getSocket().getOutputStream());
-            in = new Scanner(getSocket().getInputStream());
+            out = new PrintStream(getOutputStream());
+            in = new BufferedReader(new InputStreamReader(getInputStream()));
             hadBeenConnected = true;
         }
     }
